@@ -5,11 +5,11 @@
     // Set the token as the value for the token input
     // myForm.token.value = data.response.token.token;
     // var $token = data.response.token.token;
-    myForm.token.value = data.response.token.token;
+    // myForm.token1.value = 1;
     // view.textContent = $token;
     // console.log($token);
 
-    // $myForm.append($('<input type="hidden" name= "stripeToken" />').val($token));
+    $myForm.append($('<input type="hidden" name= "token" />').val(12));
 
 
     // IMPORTANT: Here we call `submit()` on the form element directly instead of using jQuery to prevent and infinite token request loop.
@@ -42,14 +42,23 @@
 // });​
 
     // Make the token request
-    TCO.requestToken(successCallback, errorCallback, args);
-  };
+    TCO.requestToken(successCallback(), errorCallback(), args);
+  // };
 
-  $(function() {
-    // Pull in the public encryption key for our environment
-    TCO.loadPubKey('sandbox', function(){
-      publishableKey = "2E460B37-5BC1-41A4-906E-2F17C0BCF986";
-    });
+  // $(function() {
+  //   // Pull in the public encryption key for our environment
+  //   TCO.loadPubKey('sandbox', function(){
+  //     publishableKey = "2E460B37-5BC1-41A4-906E-2F17C0BCF986";
+  //   });
+
+    $.getScript('https://www.2checkout.com/checkout/api/2co.min.js', function() {
+                    try {
+                            // Pull in the public encryption key for our environment
+                            TCO.loadPubKey('sandbox');
+                        } catch(e) {
+                            alert(e.toSource());
+                        }
+                });
 
     $("#checkout-form").submit(function(e) {
       // Call our token request function
@@ -58,4 +67,4 @@
       // Prevent form from submitting
       return false;
     });
-  });
+  // });

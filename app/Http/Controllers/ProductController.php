@@ -143,39 +143,40 @@ class ProductController extends Controller
         //   // dd('hi');
         // dd($request->input('stripeToken'));
 
-        \Twocheckout::privateKey('7AE5B451-DBBB-49FD-8CD6-2D63FD14C852');
-        \Twocheckout::sellerId('901355040');
+        \Twocheckout::privateKey('62ADC877-61CB-48D5-B3A5-551FB5805FCC');
+        \Twocheckout::sellerId('901355178');
         \Twocheckout::sandbox(true);
+        // \Twocheckout::verifySSL(false);
         // dd($request->input('token'));
 
         try {
-            $charge = \Twocheckout_Charge::auth(array(
-                "sellerId" => "901355040",
-                "merchantOrderId" => "123",
-                "token" => $request->input('token'),
-                "currency" => 'USD',
-                "total" => $cart->totalPrice,
-                "billingAddr" => array(
-                    "name" => 'Testing Tester',
-                    "addrLine1" => '123 Test St',
-                    "city" => 'Columbus',
-                    "state" => 'OH',
-                    "zipCode" => '43123',
-                    "country" => 'USA',
-                    "email" => 'testingtester@2co.com',
-                    "phoneNumber" => '555-555-5555'
-                ),
-                "shippingAddr" => array(
-                    "name" => 'Testing Tester',
-                    "addrLine1" => '123 Test St',
-                    "city" => 'Columbus',
-                    "state" => 'OH',
-                    "zipCode" => '43123',
-                    "country" => 'USA',
-                    "email" => 'testingtester@2co.com',
-                    "phoneNumber" => '555-555-5555'
-                )
+              $charge = \Twocheckout_Charge::auth(array(
+                  "sellerId"=> "901355178",
+                  "merchantOrderId" => "123",
+                  "token"      => $request->input('token'),
+                  "currency"   => 'USD',
+                  "total"      => $cart->totalPrice,
+                  "billingAddr" => array(
+                      "name" => 'Testing Tester',
+                      "addrLine1" => '123 Test St',
+                      "city" => 'Columbus',
+                      "state" => 'OH',
+                      "zipCode" => '43123',
+                      "country" => 'USA',
+                      "email" => 'example@2co.com',
+                      "phoneNumber" => '555-555-5555'
+                  )
+                
             ));
+            // dd($charge);
+
+            if ($charge['response']['responseCode'] == 'APPROVED') {
+                echo "Thanks for your Order!";
+                echo "<h3>Return Parameters:</h3>";
+                echo "<pre>";
+                print_r($charge);
+                echo "</pre>";
+              }
           $order = new Order();
           $order->cart = serialize($cart);
           $order->address =  $request->input('address');
@@ -194,7 +195,7 @@ class ProductController extends Controller
 
             //$this->assertEquals('APPROVED', $charge['response']['responseCode']);
         } catch (\Twocheckout_Error $e) {
-            //$this->assertEquals('Unauthorized', $e->getMessage());
+            print_r($e->getMessage());;
         }
          
     //       $order = new Order();

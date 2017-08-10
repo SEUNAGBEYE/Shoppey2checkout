@@ -68,7 +68,7 @@
 		</div>
 		<form action="{{ route('checkout') }}" method="post" id="checkout-form">
 			{{ csrf_field() }}
-			  <input name="token" type="hidden" value=""/>
+			  <input name="token" type="hidden" value="" />
 			<div class="row">
 				<div class="col-xs-6">
 					<div class="form-group">
@@ -132,25 +132,66 @@
 	</div>
 	
 
-		<script src="{{ asset('/js/2co.js') }}"></script>
- 			<script type="text/javascript"> 
-			    $(document).ready(function() { 
-			 
-			        $('#button').click(function() { 
-			            $('div.test').block({ message: null }); 
-			        }); 
-			 
-			        $('#button2').click(function() { 
-			            $('div.test').block({ 
-			                message: '<h1>Processing</h1>', 
-			                css: { border: '3px solid #a00' } 
-			            }); 
-			        });
-			    }); 
-			 
-			       
-			</script>
+		
 <script type="text/javascript" src="https://www.2checkout.com/checkout/api/2co.min.js"></script>
+
+<script type="text/javascript">
+
+    // Called when token created successfully.
+  var successCallback = function(data) {
+    var myForm = document.getElementById('checkout-form');
+
+    // Set the token as the value for the token input
+    myForm.token.value = data.response.token.token;
+
+    // IMPORTANT: Here we call `submit()` on the form element directly instead of using jQuery to prevent and infinite token request loop.
+    myForm.submit();
+  };
+
+  // Called when token creation fails.
+  var errorCallback = function(data) {
+    if (data.errorCode === 200) {
+      // This error code indicates that the ajax call failed. We recommend that you retry the token request.
+      tokenRequest();
+    } else {
+      alert(data.errorMsg);
+    }
+  };
+
+  var tokenRequest = function() {
+    // Setup token request arguments
+    var args = {
+  	sellerId: "901355178",
+  	publishableKey: "392AECE2-52DC-43F6-9C3D-4F53CAF5CCC7",
+    ccNo: $("#card-number").val(),
+    cvv: $("#card-cvc").val(),
+    expMonth: $("#card-expiry-month").val(),
+    expYear: $("#card-expiry-year").val()
+    };
+
+
+    // Make the token request
+    TCO.requestToken(successCallback, errorCallback, args);
+  };
+
+  $(function() {
+    // Pull in the public encryption key for our environment
+    TCO.loadPubKey('sandbox');
+
+    $("#checkout-form").submit(function(e) {
+      // Call our token request function
+      tokenRequest();
+
+      // Prevent form from submitting
+      return false;
+    });
+  });
+
+
+
+</script>
+
+
 @endsection
  </body>
 </html>
